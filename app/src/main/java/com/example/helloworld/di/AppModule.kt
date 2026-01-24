@@ -9,6 +9,10 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.createSupabaseClient
+import io.github.jan.supabase.gotrue.Auth
+import io.github.jan.supabase.postgrest.Postgrest
+import io.github.jan.supabase.storage.Storage
 import retrofit2.Retrofit
 import javax.inject.Singleton
 
@@ -18,8 +22,15 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideSupabaseClient(): SupabaseClient {
-        return NetworkModule.supabase
+    fun provideSupabaseClient(@ApplicationContext context: Context): SupabaseClient {
+        return createSupabaseClient(
+            supabaseUrl = NetworkModule.SUPABASE_URL,
+            supabaseKey = NetworkModule.SUPABASE_KEY
+        ) {
+            install(Postgrest)
+            install(Auth)
+            install(Storage)
+        }
     }
 
     @Provides

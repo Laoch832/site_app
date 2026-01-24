@@ -1,16 +1,23 @@
 package com.example.helloworld.ui.screens
 
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Audiotrack
 import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.outlined.Audiotrack
 import androidx.compose.material.icons.outlined.Book
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.PhotoLibrary
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -21,10 +28,15 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
@@ -35,6 +47,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.helloworld.ui.components.GlassTopBar
+import com.example.helloworld.utils.LogManager
 import kotlinx.coroutines.launch
 
 sealed class Screen(val route: String, val label: String, val iconFilled: ImageVector, val iconOutlined: ImageVector) {
@@ -51,6 +64,8 @@ fun MainScreen() {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    var showLogs by remember { mutableStateOf(false) }
+
     val items = listOf(
         Screen.Home,
         Screen.Music,
@@ -58,6 +73,10 @@ fun MainScreen() {
         Screen.Notes,
         Screen.Login
     )
+
+    if (showLogs) {
+        LogViewerDialog(onDismiss = { showLogs = false })
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -101,6 +120,9 @@ fun MainScreen() {
                 GlassTopBar(
                     title = { Text("朝夕藏念", style = MaterialTheme.typography.titleLarge) },
                     actions = {
+                        IconButton(onClick = { showLogs = true }) {
+                            Icon(Icons.Filled.List, contentDescription = "Logs")
+                        }
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(Icons.Filled.Menu, contentDescription = "Menu")
                         }
@@ -125,4 +147,30 @@ fun MainScreen() {
             }
         }
     }
+}
+
+@Composable
+fun LogViewerDialog(onDismiss: () -> Unit) {
+    val logs by LogManager.logs.collectAsState()
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("App Logs") },
+        text = {
+            LazyColumn(modifier = Modifier.fillMaxWidth().height(400.dp)) {
+                items(logs) { log ->
+                    Text(
+                        text = "${log.timestamp} ${log.level} ${log.tag}: ${log.message}",
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(vertical = 2.dp)
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) { Text("Close") }
+        },
+        dismissButton = {
+            TextButton(onClick = { LogManager.clear() }) { Text("Clear") }
+        }
+    )
 }

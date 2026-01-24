@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -31,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -42,6 +44,7 @@ import com.example.helloworld.ui.components.LoadingIndicator
 import com.example.helloworld.ui.viewmodel.GalleryViewModel
 import com.example.helloworld.ui.viewmodel.MusicViewModel
 import com.example.helloworld.ui.viewmodel.NotesViewModel
+import com.example.helloworld.utils.LogManager
 
 @Composable
 fun GalleryScreen(
@@ -83,7 +86,11 @@ fun GalleryItemCard(
                 model = image.thumbnail ?: image.url,
                 contentDescription = image.name,
                 modifier = Modifier.fillMaxWidth(),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
+                error = rememberVectorPainter(Icons.Filled.Warning),
+                onError = {
+                    LogManager.e("GalleryItemCard", "Error loading ${image.name}: ${it.result.throwable.message}")
+                }
             )
             IconButton(
                 onClick = onToggleFeatured,
@@ -131,7 +138,8 @@ fun MusicItemRow(music: MusicItem, onClick: () -> Unit) {
                     model = music.cover,
                     contentDescription = null,
                     modifier = Modifier.fillMaxWidth(0.15f),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
+                    error = rememberVectorPainter(Icons.Filled.Warning)
                 )
             },
             colors = ListItemDefaults.colors(containerColor = Color.Transparent),

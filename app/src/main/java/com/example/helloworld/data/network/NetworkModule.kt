@@ -16,17 +16,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 object NetworkModule {
 
     // Supabase Configuration
-    private const val SUPABASE_URL = "https://dsqvrjgrwkwaqdybxqgy.supabase.co"
-    private const val SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzcXZyamdyd2t3YXFkeWJ4cWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwODk5NTYsImV4cCI6MjA4MzY2NTk1Nn0.bjWmKkloP7G9PYm2gwpGw_553oV-hOzmTWNpPgoPuh8"
-
-    val supabase: SupabaseClient = createSupabaseClient(
-        supabaseUrl = SUPABASE_URL,
-        supabaseKey = SUPABASE_KEY
-    ) {
-        install(Postgrest)
-        install(Auth)
-        install(Storage)
-    }
+    const val SUPABASE_URL = "https://dsqvrjgrwkwaqdybxqgy.supabase.co"
+    const val SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzcXZyamdyd2t3YXFkeWJ4cWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwODk5NTYsImV4cCI6MjA4MzY2NTk1Nn0.bjWmKkloP7G9PYm2gwpGw_553oV-hOzmTWNpPgoPuh8"
 
     // Retrofit Configuration for Static JSONs
     fun provideRetrofit(context: Context): Retrofit {
