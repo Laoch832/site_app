@@ -3,7 +3,7 @@
 /local.properties
 /.idea/
 .DS_Store
-/build
+build
 /captures
 .externalNativeBuild
 .cxx
@@ -15,5 +15,5 @@ commandlinetools.zip
 gradle-8.4-bin.zip
 jdk-17.zip
 /jdk_dist
-/app
+
 /gradle_dist
