@@ -1,8 +1,8 @@
 package com.example.helloworld.data.repository
 
-import android.util.Log
 import com.example.helloworld.data.model.Note
 import com.example.helloworld.domain.repository.NotesRepository
+import com.example.helloworld.utils.LogManager
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.postgrest
@@ -17,7 +17,7 @@ class NotesRepositoryImpl @Inject constructor(
 
     override suspend fun getNotes(): List<Note> {
         return try {
-            supabase.postgrest.from("notes")
+            val notes = supabase.postgrest.from("notes")
                 .select {
                     filter {
                         eq("is_published", true)
@@ -25,10 +25,12 @@ class NotesRepositoryImpl @Inject constructor(
                     order("created_at", order = Order.DESCENDING)
                 }
                 .decodeList<Note>()
+            LogManager.i(TAG, "Fetched ${notes.size} notes from Supabase")
+            notes
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to fetch notes from Supabase: ${e.message}. Using dummy data.")
-            // Fallback to dummy data
-            getDummyNotes()
+            LogManager.e(TAG, "Failed to fetch notes from Supabase: ${e.message}")
+            // Return empty list to reflect real state (or lack thereof)
+            emptyList()
         }
     }
 
@@ -42,9 +44,9 @@ class NotesRepositoryImpl @Inject constructor(
                 user_id = user.id
             )
             supabase.postgrest.from("notes").insert(note)
+            LogManager.i(TAG, "Note created successfully")
         } catch (e: Exception) {
-             Log.e(TAG, "Failed to create note: ${e.message}")
-             // In a real app, we might save to local DB (Room) for sync later
+             LogManager.e(TAG, "Failed to create note: ${e.message}")
              throw e
         }
     }
@@ -56,19 +58,10 @@ class NotesRepositoryImpl @Inject constructor(
                     eq("id", id)
                 }
             }
+            LogManager.i(TAG, "Note deleted successfully")
         } catch (e: Exception) {
-             Log.e(TAG, "Failed to delete note: ${e.message}")
+             LogManager.e(TAG, "Failed to delete note: ${e.message}")
              throw e
         }
-    }
-
-    private fun getDummyNotes(): List<Note> {
-        return listOf(
-            Note(1, "初遇", "今天在图书馆看见了你，阳光洒在你身上...", "2023-05-20", true),
-            Note(2, "心动", "你笑起来真好看，像春天的花...", "2023-05-21", true),
-            Note(3, "暗恋", "默默地关注你，不敢打扰...", "2023-05-25", true),
-            Note(4, "错在", "今天下雨了，没有带伞，就像我的心情...", "2023-06-01", true),
-            Note(5, "Demo Note", "This is a demo note shown because Supabase is not configured.", "2026-01-17", true)
-        )
     }
 }
