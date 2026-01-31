@@ -16,6 +16,7 @@ class NotesRepositoryImpl @Inject constructor(
     private val TAG = "NotesRepository"
 
     override suspend fun getNotes(): List<Note> {
+        LogManager.i(TAG, "Fetching notes from Supabase...")
         return try {
             val notes = supabase.postgrest.from("notes")
                 .select {
@@ -25,11 +26,13 @@ class NotesRepositoryImpl @Inject constructor(
                     order("created_at", order = Order.DESCENDING)
                 }
                 .decodeList<Note>()
-            LogManager.i(TAG, "Fetched ${notes.size} notes from Supabase")
+            LogManager.i(TAG, "Successfully fetched ${notes.size} notes from Supabase")
             notes
         } catch (e: Exception) {
-            LogManager.e(TAG, "Failed to fetch notes from Supabase: ${e.message}")
-            // Return empty list to reflect real state (or lack thereof)
+            LogManager.e(TAG, "Critical error fetching notes: ${e.message}")
+            if (e.message?.contains("Serializer") == true) {
+                LogManager.e(TAG, "Serialization error detected! Check if Note is marked @Serializable and plugin is active.")
+            }
             emptyList()
         }
     }
@@ -51,7 +54,7 @@ class NotesRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun deleteNote(id: Int) {
+    override suspend fun deleteNote(id: String) {
         try {
             supabase.postgrest.from("notes").delete {
                 filter {

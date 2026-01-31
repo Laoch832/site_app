@@ -5,5 +5,5 @@ import com.example.helloworld.data.model.Note
 interface NotesRepository {
     suspend fun getNotes(): List<Note>
     suspend fun createNote(title: String, content: String)
-    suspend fun deleteNote(id: Int)
+    suspend fun deleteNote(id: String)
 }

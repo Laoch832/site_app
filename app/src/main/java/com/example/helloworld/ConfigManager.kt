@@ -8,6 +8,7 @@ object ConfigManager {
     private const val KEY_SELECTED_DOMAIN_INDEX = "selected_domain_index"
 
     val DOMAINS = listOf(
+        "https://www.canz-monkey.cn",          // Official
         "https://mirror2-love.canz-monkey.cn", // Priority (Mirror)
         "https://love.canz-monkey.cn"          // Original
     )

@@ -17,34 +17,34 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = MusicAccent,
-    secondary = PurpleGrey80,
-    tertiary = Pink80,
+    primary = CherryPink,
+    secondary = LightGold,
+    tertiary = PeachPink,
     background = BlackBackground,
     surface = DarkBackground,
-    onPrimary = Color.White,
-    onBackground = TextPrimary,
-    onSurface = TextPrimary
+    onPrimary = Color.Black,
+    onBackground = Color.White,
+    onSurface = Color.White
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = MusicAccent,
-    secondary = PurpleGrey40,
-    tertiary = Pink40,
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
+    primary = CherryPink,
+    secondary = LightBeige,
+    tertiary = CreamWhite,
+    background = Color.White,
+    surface = Color.White,
     onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
+    onSecondary = DeepGray,
+    onTertiary = DeepGray,
+    onBackground = DeepGray,
+    onSurface = DeepGray,
 )
 
 @Composable
 fun HelloWorldTheme(
-    darkTheme: Boolean = true, // Force Dark Theme for Atmospheric Cinema style
+    darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = false, // Disable dynamic color to enforce our style
+    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -59,7 +59,7 @@ fun HelloWorldTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = Color.Transparent.toArgb() // Transparent for immersion
+            window.statusBarColor = Color.Transparent.toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }

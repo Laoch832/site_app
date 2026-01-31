@@ -108,7 +108,7 @@ class MusicViewModel @Inject constructor(
                 .setMediaId(item.url)
                 .setMediaMetadata(
                     MediaMetadata.Builder()
-                        .setTitle(item.name)
+                        .setTitle(item.title) // Changed from name to title
                         .setArtist(item.artist)
                         .setArtworkUri(if (item.cover != null) Uri.parse(item.cover) else null)
                         .build()
@@ -128,6 +128,32 @@ class MusicViewModel @Inject constructor(
         } else {
             controller.play()
         }
+    }
+
+    fun skipToNext() {
+        val list = _musicList.value
+        if (list.isEmpty()) return
+        
+        val current = _currentTrack.value
+        val nextIndex = if (current == null) 0 else {
+            val index = list.indexOfFirst { it.url == current.url }
+            if (index == -1) 0 else (index + 1) % list.size
+        }
+        playMusic(list[nextIndex])
+    }
+
+    fun skipToPrevious() {
+        val list = _musicList.value
+        if (list.isEmpty()) return
+
+        val current = _currentTrack.value
+        val prevIndex = if (current == null) 0 else {
+            val index = list.indexOfFirst { it.url == current.url }
+            if (index == -1) 0 else {
+                if (index - 1 < 0) list.size - 1 else index - 1
+            }
+        }
+        playMusic(list[prevIndex])
     }
 
     override fun onCleared() {

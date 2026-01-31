@@ -18,14 +18,49 @@ class AuthViewModel @Inject constructor(
     private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
     val loginState: StateFlow<LoginState> = _loginState.asStateFlow()
 
+    private val _isLoggedIn = MutableStateFlow(false)
+    val isLoggedIn: StateFlow<Boolean> = _isLoggedIn.asStateFlow()
+
+    private val _currentUser = MutableStateFlow<Any?>(null)
+    val currentUser: StateFlow<Any?> = _currentUser.asStateFlow()
+
+    init {
+        checkSession()
+    }
+
+    fun checkSession() {
+        viewModelScope.launch {
+            val loggedIn = repository.isUserLoggedIn()
+            _isLoggedIn.value = loggedIn
+            if (loggedIn) {
+                _currentUser.value = repository.getCurrentUser()
+            }
+        }
+    }
+
     fun login(email: String, password: String) {
         viewModelScope.launch {
             _loginState.value = LoginState.Loading
             try {
                 repository.loginWithEmail(email, password)
                 _loginState.value = LoginState.Success
+                _isLoggedIn.value = true
+                _currentUser.value = repository.getCurrentUser()
             } catch (e: Exception) {
-                _loginState.value = LoginState.Error(e.message ?: "Login failed")
+                _loginState.value = LoginState.Error(e.message ?: "登录失败")
+            }
+        }
+    }
+
+    fun loginWithGitHub() {
+        viewModelScope.launch {
+            _loginState.value = LoginState.Loading
+            try {
+                repository.loginWithGitHub()
+                // Success state will be handled by AuthStateChange if implemented globally, 
+                // but for simplicity we'll assume it's fine here.
+            } catch (e: Exception) {
+                _loginState.value = LoginState.Error(e.message ?: "GitHub 登录失败")
             }
         }
     }

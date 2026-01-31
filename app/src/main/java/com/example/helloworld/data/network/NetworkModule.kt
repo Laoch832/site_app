@@ -26,8 +26,8 @@ object NetworkModule {
         val validBaseUrl = if (baseUrl.endsWith("/")) baseUrl else "$baseUrl/"
         
         return Retrofit.Builder()
-        .baseUrl(validBaseUrl)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
+            .baseUrl(validBaseUrl)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
     }
 }

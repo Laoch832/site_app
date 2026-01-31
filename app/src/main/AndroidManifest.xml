@@ -46,6 +46,21 @@
             </intent-filter>
         </service>
 
+        <meta-data android:name="io.sentry.dsn" android:value="https://placeholder@sentry.io/123" />
+        <!-- Enable automatic breadcrumbs for breadcrumbs that are not collected by default -->
+        <meta-data android:name="io.sentry.breadcrumbs.activity-lifecycle" android:value="true" />
+        <meta-data android:name="io.sentry.breadcrumbs.fragment-lifecycle" android:value="true" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
     </application>
 
 </manifest>

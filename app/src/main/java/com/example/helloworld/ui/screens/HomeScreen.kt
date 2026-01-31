@@ -22,61 +22,89 @@ import com.example.helloworld.data.model.Note
 import com.example.helloworld.ui.components.GlassCard
 import com.example.helloworld.ui.viewmodel.NotesViewModel
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
+import coil.compose.AsyncImage
+import com.example.helloworld.ui.viewmodel.HomeViewModel
+
+import androidx.compose.foundation.layout.systemBarsPadding
+
 @Composable
 fun HomeScreen(
-    viewModel: NotesViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val notes by viewModel.notes.collectAsState()
+    val quote by viewModel.quote.collectAsState()
+    val author by viewModel.author.collectAsState()
+    val backgroundUrl by viewModel.backgroundImageUrl.collectAsState()
 
-    LazyColumn(
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = Modifier.fillMaxSize()
-    ) {
-        item {
-            Column(modifier = Modifier.padding(bottom = 16.dp)) {
-                Text(
-                    "我喜欢你，默默地",
-                    style = MaterialTheme.typography.headlineLarge,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    "Day 474", // Placeholder countdown
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(top = 4.dp),
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-        }
-        items(notes) { note ->
-            DiaryCard(note = note)
-        }
-    }
-}
+    Box(modifier = Modifier.fillMaxSize()) {
+        // Background Image
+        AsyncImage(
+            model = backgroundUrl,
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
 
-@Composable
-fun DiaryCard(note: Note) {
-    GlassCard(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(120.dp)
-    ) {
+        // Content
         Column(
             modifier = Modifier
-                .padding(16.dp)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceBetween
+                .fillMaxSize()
+                .systemBarsPadding()
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Text(
-                text = note.title,
-                style = MaterialTheme.typography.titleLarge
-            )
-            Text(
-                text = note.created_at ?: "",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            GlassCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = quote,
+                        style = MaterialTheme.typography.headlineSmall,
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "— $author",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Button(
+                onClick = { 
+                    viewModel.fetchQuote()
+                    viewModel.refreshBackground()
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
+                )
+            ) {
+                Icon(Icons.Default.Refresh, contentDescription = null)
+                Spacer(modifier = Modifier.size(8.dp))
+                Text("换一句")
+            }
         }
     }
 }

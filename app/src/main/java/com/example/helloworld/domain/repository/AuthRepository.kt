@@ -7,4 +7,5 @@ interface AuthRepository {
     suspend fun logout()
     suspend fun isUserLoggedIn(): Boolean
     suspend fun loginWithEmail(email: String, password: String)
+    suspend fun loginWithGitHub()
 }

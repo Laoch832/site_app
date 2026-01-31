@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.serialization")
     id("com.google.dagger.hilt.android")
     id("kotlin-kapt")
 }
@@ -69,9 +70,14 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     // Add Extended Icons
     implementation("androidx.compose.material:material-icons-extended")
+    // Add Material 2 for PullRefresh
+    implementation("androidx.compose.material:material:1.6.1")
     
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.7")
+    
+    // Serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
     
     // Networking
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
@@ -94,6 +100,9 @@ dependencies {
     // Ktor client for Supabase
     implementation("io.ktor:ktor-client-android:2.3.8")
 
+    // Sentry
+    implementation("io.sentry:sentry-android:7.3.0")
+
     // Browser (Custom Tabs)
     implementation("androidx.browser:browser:1.8.0")
 
@@ -103,6 +112,8 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 
     testImplementation("junit:junit:4.13.2")
+    testImplementation("org.mockito:mockito-core:5.5.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.08.00"))

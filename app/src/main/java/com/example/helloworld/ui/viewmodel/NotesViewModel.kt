@@ -25,6 +25,9 @@ class NotesViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error.asStateFlow()
+
     init {
         loadNotes()
     }
@@ -32,17 +35,19 @@ class NotesViewModel @Inject constructor(
     fun loadNotes() {
         viewModelScope.launch {
             _isLoading.value = true
-            Log.d(TAG, "Starting to load notes...")
+            _error.value = null
             try {
                 val result = repository.getNotes()
-                Log.d(TAG, "Loaded ${result.size} notes successfully")
                 _notes.value = result
             } catch (e: Exception) {
-                Log.e(TAG, "Error loading notes: ${e.message}", e)
-                e.printStackTrace()
+                _error.value = e.message ?: "加载失败"
             } finally {
                 _isLoading.value = false
             }
         }
+    }
+
+    fun refresh() {
+        loadNotes()
     }
 }

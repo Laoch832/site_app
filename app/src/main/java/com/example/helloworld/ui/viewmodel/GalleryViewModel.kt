@@ -29,6 +29,20 @@ class GalleryViewModel @Inject constructor(
         loadImages()
     }
 
+    fun uploadImage(byteArray: ByteArray, fileName: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                repository.uploadImage(byteArray, fileName)
+                loadImages() // Refresh list after upload
+            } catch (e: Exception) {
+                Log.e(TAG, "Error uploading image: ${e.message}", e)
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
     fun loadImages() {
         viewModelScope.launch {
             _isLoading.value = true
